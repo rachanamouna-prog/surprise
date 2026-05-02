@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday Surprise!</title>
+
+    <style>
+        :root {
+            --primary-pink: #ff85a1;
+            --bg-color: #ffe5ec;
+            --accent-gold: #ffd700;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-color);
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow-x: hidden;
+        }
+
+        .screen { display: none; padding: 20px; }
+        .active { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            animation: fadeIn 0.8s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 { font-size: 6rem; color: var(--primary-pink); margin: 0; }
+        h2 { color: #d63384; font-size: 2rem; }
+
+        .btn {
+            background: var(--primary-pink);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(255, 133, 161, 0.4);
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn:hover { transform: scale(1.05); background: #f06292; }
+
+        #cake { font-size: 7rem; cursor: pointer; transition: transform 0.3s; }
+        #cake:hover { transform: scale(1.1) rotate(5deg); }
+
+        /* Modern Gallery Grid */
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            max-width: 500px;
+            margin-top: 20px;
+        }
+
+        .gallery-item {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 15px;
+            border: 5px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: 0.3s;
+        }
+
+        .gallery-item:hover {
+            transform: scale(1.05) rotate(2deg);
+            z-index: 10;
+        }
+
+        video {
+            width: 100%;
+            max-width: 350px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .confetti {
+            position: fixed;
+            z-index: 999;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Start Screen -->
+    <div id="screen1" class="screen active">
+        <h1 id="countdown">3</h1>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="screen2" class="screen">
+        <p style="font-size: 1.5rem;">🌸 Preparing the magic... 🌸</p>
+    </div>
+
+    <!-- Intro Message -->
+    <div id="screen3" class="screen">
+        <h2>My favorite person was born today! 🎂</h2>
+        <button class="btn" onclick="nextScreen(4)">Click to open</button>
+    </div>
+
+    <!-- Cake Interactive -->
+    <div id="screen4" class="screen">
+        <p style="font-size: 1.2rem;">Tap the cake to cut it! 🍰</p>
+        <div id="cake" onclick="cutCake()">🎂</div>
+        <h2 id="cakeMsg" style="display:none;">Happy Birthday, Beautiful! ❤️</h2>
+        <button id="cakeBtn" class="btn" style="display:none;" onclick="nextScreen(5)">See Our Memories 💖</button>
+    </div>
+
+    <!-- Media Gallery -->
+    <div id="screen5" class="screen">
+        <h2>Our Moments 💖</h2>
+        
+        <audio id="bgMusic" loop>
+            <source src="bir.mp3.aac" type="audio/mpeg">
+        </audio>
+
+        <video controls>
+            <source src="WhatsApp Video 2026-04-30 at 7.16.57 AM.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <div class="gallery">
+            <!-- REPLACE THE URLS BELOW WITH YOUR OWN IMAGE LINKS -->
+            <img src="WhatsApp Image 2026-04-30 at 6.23.01 PM.jpeg" class="gallery-item" alt="Memory 1">
+            <img src="WhatsApp Image 2026-04-30 at 8.27.44 PM.jpeg" class="gallery-item" alt="Memory 2">
+            <img src="WhatsApp Image 2026-04-30 at 8.27.45 PM.jpeg" class="gallery-item" alt="Memory 4">
+        </div>
+
+        <button class="btn" onclick="nextScreen(6)">Final Message ✨</button>
+    </div>
+
+    <!-- Final Message -->
+    <div id="screen6" class="screen">
+        <h2>Special Message ✨</h2>
+        <div style="background: white; padding: 30px; border-radius: 20px; max-width: 400px; line-height: 1.6; color: #444;">
+            <p>You are amazing. Stay happy always 💖,</p>
+            <p>You are the best thing that ever happened to me. I love you so much!</p>
+            <p><strong>Happy Birthday!</strong></p>
+            <p>You deserve all the happiness in the world. Cheers to many more years of love and laughter together!</p>
+        </div>
+        <button class="btn" onclick="location.reload()">Replay 🎈</button>
+    </div>
+
+    <script>
+        function nextScreen(num) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('screen' + num).classList.add('active');
+            
+            // Start music automatically when reaching the gallery
+            if(num === 5) {
+                document.getElementById('bgMusic').play().catch(e => console.log("Music needs interaction to play"));
+            }
+        }
+
+        // Countdown Logic
+        let count = 3;
+        const timer = setInterval(() => {
+            count--;
+            if (count > 0) {
+                document.getElementById('countdown').innerText = count;
+            } else {
+                clearInterval(timer);
+                nextScreen(2);
+                setTimeout(() => nextScreen(3), 2000);
+            }
+        }, 1000);
+
+        // Cake Cut Logic
+        function cutCake() {
+            document.getElementById('cake').innerText = '🍰';
+            document.getElementById('cakeMsg').style.display = 'block';
+            document.getElementById('cakeBtn').style.display = 'inline-block';
+            createConfetti();
+        }
+
+        // Confetti Effect
+        function createConfetti() {
+            const emojis = ['🎉', '💖', '✨', '🎈', '🌸'];
+            for (let i = 0; i < 60; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.top = '-20px';
+                confetti.style.fontSize = Math.random() * 20 + 10 + 'px';
+                document.body.appendChild(confetti);
+
+                let y = 0;
+                let x = Math.random() * 2 - 1; // Slight side movement
+                const fall = setInterval(() => {
+                    y += 4;
+                    confetti.style.top = y + 'px';
+                    confetti.style.transform = `rotate(${y}deg) translateX(${x * 20}px)`;
+
+                    if (y > window.innerHeight) {
+                        clearInterval(fall);
+                        confetti.remove();
+                    }
+                }, 20);
+            }
+        }
+    </script>
+
+</body>
+</html>
